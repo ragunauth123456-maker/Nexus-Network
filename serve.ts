@@ -9,6 +9,7 @@
 // with an already-running server. Every sandbox user has passwordless sudo, so
 // the takeover works across user boundaries.
 import handler from "./dist/server/server.js";
+import { handleApiRequest } from "./src/lib/api-handler.ts";
 
 // Pinned, NOT read from the environment. The published preview URL
 // (<label>.<PUBLIC_SITE_DOMAIN>) is reverse-proxied to 0.0.0.0:3000 inside the
@@ -41,10 +42,20 @@ for (let attempt = 1; ; attempt++) {
       hostname: HOST,
       async fetch(req) {
         const { pathname } = new URL(req.url);
+
+        // API routes: /api/nexus/v1/*
+        if (pathname.startsWith("/api/nexus/v1/")) {
+          const apiResponse = await handleApiRequest(req);
+          if (apiResponse) return apiResponse;
+        }
+
+        // Static files
         if (pathname !== "/") {
           const file = Bun.file(CLIENT_DIR + pathname);
           if (await file.exists()) return new Response(file);
         }
+
+        // Fall through to TanStack Start SSR handler
         return (
           handler as { fetch: (r: Request) => Response | Promise<Response> }
         ).fetch(req);

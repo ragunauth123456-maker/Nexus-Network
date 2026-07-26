@@ -66,5 +66,39 @@ export async function ensureTables(): Promise<void> {
     completed_at TIMESTAMPTZ
   )`;
 
+  // knowledge_entities table
+  await s`CREATE TABLE IF NOT EXISTS knowledge_entities (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    entity_type TEXT NOT NULL,
+    description TEXT,
+    domain TEXT DEFAULT 'general',
+    contributor_node_id UUID REFERENCES nodes(id) ON DELETE SET NULL,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+  )`;
+
+  // knowledge_relationships table
+  await s`CREATE TABLE IF NOT EXISTS knowledge_relationships (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    source_entity_id UUID REFERENCES knowledge_entities(id) ON DELETE CASCADE NOT NULL,
+    target_entity_id UUID REFERENCES knowledge_entities(id) ON DELETE CASCADE NOT NULL,
+    relationship_type TEXT NOT NULL,
+    description TEXT,
+    contributor_node_id UUID REFERENCES nodes(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  )`;
+
+  // api_keys table
+  await s`CREATE TABLE IF NOT EXISTS api_keys (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    node_id UUID REFERENCES nodes(id) NOT NULL,
+    key_hash TEXT NOT NULL,
+    label TEXT DEFAULT 'default',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(node_id, label)
+  )`;
+
   migrated = true;
 }

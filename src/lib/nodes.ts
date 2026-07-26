@@ -3,6 +3,38 @@ import { sql, pool } from "~/db";
 import { ensureTables } from "./db-setup";
 
 // ──────────────────────────────────────────
+// Inline auth helpers (Bun-native — server only)
+// ──────────────────────────────────────────
+function hashKey(key: string): string {
+  const hasher = new Bun.CryptoHasher("sha256");
+  hasher.update(key);
+  return hasher.digest("hex") as string;
+}
+function generateApiKey(): string {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return "nnp_" + Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+function maskKey(key: string): string {
+  if (key.length <= 16) return key.slice(0, 8) + "\u2026";
+  return key.slice(0, 8) + "\u2026" + key.slice(-4);
+}
+async function verifyApiKey(key: string): Promise<{ valid: boolean; node_id?: string }> {
+  if (!key || typeof key !== "string" || !key.startsWith("nnp_")) return { valid: false };
+  await ensureTables();
+  const h = hashKey(key);
+  const rows = await sql()`SELECT node_id FROM api_keys WHERE key_hash = ${h} LIMIT 1`;
+  if (rows.length === 0) return { valid: false };
+  return { valid: true, node_id: String(rows[0].node_id) };
+}
+async function requireAuth(authKey: string | undefined, expectedNodeId: string): Promise<void> {
+  if (!authKey) return;
+  const result = await verifyApiKey(authKey);
+  if (!result.valid) throw new Error("Unauthorized: invalid API key");
+  if (result.node_id !== expectedNodeId) throw new Error("Unauthorized: API key does not match this node");
+}
+
+// ──────────────────────────────────────────
 // Types
 // ──────────────────────────────────────────
 
@@ -26,6 +58,28 @@ export interface NodeRow {
   created_at: string;
   updated_at: string;
 }
+
+export interface ApiKeyRow {
+  id: string;
+  node_id: string;
+  label: string;
+  masked_key: string;
+  created_at: string;
+}
+
+// ──────────────────────────────────────────
+// Server fn: Verify an API key (for client use)
+// ──────────────────────────────────────────
+
+export const authenticateWithKey = createServerFn({ method: "POST" })
+  .validator((data: unknown) => {
+    const d = data as Record<string, unknown> | null;
+    const key = typeof d?.key === "string" ? d.key.trim() : "";
+    return { key };
+  })
+  .handler(async ({ data }) => {
+    return verifyApiKey(data.key);
+  });
 
 // ──────────────────────────────────────────
 // Register a new node
@@ -87,13 +141,21 @@ export const registerNode = createServerFn({ method: "POST" })
     `;
     const node = coerceNode(rows[0]);
 
+    // Generate an API key for the new node
+    const rawKey = generateApiKey();
+    const keyHash = hashKey(rawKey);
+    await s`
+      INSERT INTO api_keys (node_id, key_hash, label)
+      VALUES (${node.id}, ${keyHash}, 'default')
+    `;
+
     // Log registration activity
     await s`
       INSERT INTO activity_log (node_id, action, details)
       VALUES (${node.id}, 'node_registered', ${'Node registered as ' + data.node_type})
     `;
 
-    return node;
+    return { node, apiKey: rawKey };
   });
 
 // ──────────────────────────────────────────
@@ -173,6 +235,11 @@ export const updateNode = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     await ensureTables();
+
+    // Auth check
+    const authKey = (data as Record<string, unknown>).authKey as string | undefined;
+    await requireAuth(authKey, data.id);
+
     const s = sql();
     const rows = await s`
       UPDATE nodes
@@ -217,6 +284,11 @@ export const addCapability = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     await ensureTables();
+
+    // Auth check
+    const authKey = (data as Record<string, unknown>).authKey as string | undefined;
+    await requireAuth(authKey, data.nodeId);
+
     const s = sql();
 
     // Get current capabilities
@@ -260,6 +332,11 @@ export const removeCapability = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     await ensureTables();
+
+    // Auth check
+    const authKey = (data as Record<string, unknown>).authKey as string | undefined;
+    await requireAuth(authKey, data.nodeId);
+
     const s = sql();
 
     const rows = await s`
@@ -473,6 +550,11 @@ export const requestConnection = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     await ensureTables();
+
+    // Auth check
+    const authKey = (data as Record<string, unknown>).authKey as string | undefined;
+    await requireAuth(authKey, data.requesterId);
+
     const s = sql();
 
     // Check if connection already exists
@@ -527,6 +609,17 @@ export const acceptConnection = createServerFn({ method: "POST" })
     await ensureTables();
     const s = sql();
 
+    // Get target_id for auth check
+    const connCheck = await s`
+      SELECT requester_id, target_id FROM connections WHERE id = ${data.connectionId}
+    `;
+    if (connCheck.length === 0) throw new Error("Connection not found");
+    const targetId = String(connCheck[0].target_id);
+
+    // Auth check — key must match target node (the one accepting)
+    const authKey = (data as Record<string, unknown>).authKey as string | undefined;
+    await requireAuth(authKey, targetId);
+
     const rows = await s`
       UPDATE connections
       SET status = 'accepted', updated_at = NOW()
@@ -570,6 +663,17 @@ export const rejectConnection = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     await ensureTables();
     const s = sql();
+
+    // Get target_id for auth check
+    const connCheck = await s`
+      SELECT requester_id, target_id FROM connections WHERE id = ${data.connectionId}
+    `;
+    if (connCheck.length === 0) throw new Error("Connection not found");
+    const targetId = String(connCheck[0].target_id);
+
+    // Auth check — key must match target node (the one rejecting)
+    const authKey = (data as Record<string, unknown>).authKey as string | undefined;
+    await requireAuth(authKey, targetId);
 
     const rows = await s`
       UPDATE connections
@@ -681,6 +785,11 @@ export const startWorkflow = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     await ensureTables();
+
+    // Auth check — key must match requester
+    const authKey = (data as Record<string, unknown>).authKey as string | undefined;
+    await requireAuth(authKey, data.requesterId);
+
     const s = sql();
 
     // Verify connection is accepted
@@ -797,6 +906,110 @@ export const getConnectionStatus = createServerFn({ method: "GET" })
     `;
     if (rows.length === 0) return null;
     return coerceConnection(rows[0]);
+  });
+
+// ──────────────────────────────────────────
+// API Key Management
+// ──────────────────────────────────────────
+
+export const listApiKeys = createServerFn({ method: "GET" })
+  .validator((data: unknown) => {
+    const d = data as Record<string, unknown> | null;
+    const nodeId = typeof d?.nodeId === "string" ? d.nodeId.trim() : "";
+    if (!nodeId) throw new Error("Node ID is required");
+    return { nodeId };
+  })
+  .handler(async ({ data }) => {
+    await ensureTables();
+    const s = sql();
+    const rows = await s`
+      SELECT id, node_id, key_hash, label, created_at
+      FROM api_keys
+      WHERE node_id = ${data.nodeId}
+      ORDER BY created_at DESC
+    `;
+    return rows.map((r: Record<string, unknown>) => ({
+      id: String(r.id),
+      node_id: String(r.node_id),
+      label: String(r.label ?? "default"),
+      masked_key: "nnp_" + String(r.key_hash).substring(0, 4) + "…" + String(r.key_hash).substring(String(r.key_hash).length - 4),
+      created_at: String(r.created_at),
+    }));
+  });
+
+export const createApiKey = createServerFn({ method: "POST" })
+  .validator((data: unknown) => {
+    const d = data as Record<string, unknown> | null;
+    if (!d || typeof d !== "object") throw new Error("Request body is required");
+    const nodeId = typeof d.nodeId === "string" ? d.nodeId.trim() : "";
+    if (!nodeId) throw new Error("Node ID is required");
+    const label = typeof d.label === "string" ? d.label.trim() : "default";
+    return { nodeId, label };
+  })
+  .handler(async ({ data }) => {
+    await ensureTables();
+
+    // Auth check
+    const authKey = (data as Record<string, unknown>).authKey as string | undefined;
+    await requireAuth(authKey, data.nodeId);
+
+    const rawKey = generateApiKey();
+    const keyHash = hashKey(rawKey);
+    const s = sql();
+
+    // Check for label uniqueness
+    const existing = await s`
+      SELECT id FROM api_keys WHERE node_id = ${data.nodeId} AND label = ${data.label}
+    `;
+    const label = existing.length > 0 ? data.label + "_" + Date.now() : data.label;
+
+    await s`
+      INSERT INTO api_keys (node_id, key_hash, label)
+      VALUES (${data.nodeId}, ${keyHash}, ${label})
+    `;
+
+    // Log activity
+    await s`
+      INSERT INTO activity_log (node_id, action, details)
+      VALUES (${data.nodeId}, 'api_key_created', ${'API key created: ' + label})
+    `;
+
+    return { apiKey: rawKey, label };
+  });
+
+export const revokeApiKey = createServerFn({ method: "POST" })
+  .validator((data: unknown) => {
+    const d = data as Record<string, unknown> | null;
+    if (!d || typeof d !== "object") throw new Error("Request body is required");
+    const keyId = typeof d.keyId === "string" ? d.keyId.trim() : "";
+    if (!keyId) throw new Error("Key ID is required");
+    return { keyId };
+  })
+  .handler(async ({ data }) => {
+    await ensureTables();
+    const s = sql();
+
+    // Get the node_id for this key
+    const keyRows = await s`
+      SELECT node_id, label FROM api_keys WHERE id = ${data.keyId}
+    `;
+    if (keyRows.length === 0) throw new Error("API key not found");
+    const nodeId = String(keyRows[0].node_id);
+    const label = String(keyRows[0].label ?? "default");
+
+    // Auth check
+    const authKey = (data as Record<string, unknown>).authKey as string | undefined;
+    await requireAuth(authKey, nodeId);
+
+    await s`DELETE FROM api_keys WHERE id = ${data.keyId}`;
+
+    // Log activity
+    await s`
+      INSERT INTO activity_log (node_id, action, details)
+      VALUES (${nodeId}, 'api_key_revoked', ${'API key revoked: ' + label})
+    `;
+
+    return { success: true };
   });
 
 // ──────────────────────────────────────────

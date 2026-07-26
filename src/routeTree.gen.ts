@@ -16,6 +16,7 @@ import { Route as ApiRouteImport } from './routes/api'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SpecIndexRouteImport } from './routes/spec/index'
 import { Route as NodesIndexRouteImport } from './routes/nodes/index'
+import { Route as KnowledgeIndexRouteImport } from './routes/knowledge/index'
 import { Route as SpecTrustRouteImport } from './routes/spec/trust'
 import { Route as SpecReasoningRouteImport } from './routes/spec/reasoning'
 import { Route as SpecKnowledgeRouteImport } from './routes/spec/knowledge'
@@ -23,7 +24,10 @@ import { Route as SpecIdentityRouteImport } from './routes/spec/identity'
 import { Route as SpecDiscoveryRouteImport } from './routes/spec/discovery'
 import { Route as SpecCollaborationRouteImport } from './routes/spec/collaboration'
 import { Route as NodesIdRouteImport } from './routes/nodes/$id'
+import { Route as KnowledgeEntitiesRouteImport } from './routes/knowledge/entities'
+import { Route as KnowledgeContributeRouteImport } from './routes/knowledge/contribute'
 import { Route as NodesIdDashboardRouteImport } from './routes/nodes/$id/dashboard'
+import { Route as KnowledgeEntitiesIdRouteImport } from './routes/knowledge/entities/$id'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -58,6 +62,11 @@ const SpecIndexRoute = SpecIndexRouteImport.update({
 const NodesIndexRoute = NodesIndexRouteImport.update({
   id: '/nodes/',
   path: '/nodes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KnowledgeIndexRoute = KnowledgeIndexRouteImport.update({
+  id: '/knowledge/',
+  path: '/knowledge/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SpecTrustRoute = SpecTrustRouteImport.update({
@@ -95,10 +104,25 @@ const NodesIdRoute = NodesIdRouteImport.update({
   path: '/nodes/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KnowledgeEntitiesRoute = KnowledgeEntitiesRouteImport.update({
+  id: '/knowledge/entities',
+  path: '/knowledge/entities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KnowledgeContributeRoute = KnowledgeContributeRouteImport.update({
+  id: '/knowledge/contribute',
+  path: '/knowledge/contribute',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NodesIdDashboardRoute = NodesIdDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => NodesIdRoute,
+} as any)
+const KnowledgeEntitiesIdRoute = KnowledgeEntitiesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => KnowledgeEntitiesRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -107,6 +131,8 @@ export interface FileRoutesByFullPath {
   '/discover': typeof DiscoverRoute
   '/docs': typeof DocsRoute
   '/register': typeof RegisterRoute
+  '/knowledge/contribute': typeof KnowledgeContributeRoute
+  '/knowledge/entities': typeof KnowledgeEntitiesRouteWithChildren
   '/nodes/$id': typeof NodesIdRouteWithChildren
   '/spec/collaboration': typeof SpecCollaborationRoute
   '/spec/discovery': typeof SpecDiscoveryRoute
@@ -114,8 +140,10 @@ export interface FileRoutesByFullPath {
   '/spec/knowledge': typeof SpecKnowledgeRoute
   '/spec/reasoning': typeof SpecReasoningRoute
   '/spec/trust': typeof SpecTrustRoute
+  '/knowledge/': typeof KnowledgeIndexRoute
   '/nodes/': typeof NodesIndexRoute
   '/spec/': typeof SpecIndexRoute
+  '/knowledge/entities/$id': typeof KnowledgeEntitiesIdRoute
   '/nodes/$id/dashboard': typeof NodesIdDashboardRoute
 }
 export interface FileRoutesByTo {
@@ -124,6 +152,8 @@ export interface FileRoutesByTo {
   '/discover': typeof DiscoverRoute
   '/docs': typeof DocsRoute
   '/register': typeof RegisterRoute
+  '/knowledge/contribute': typeof KnowledgeContributeRoute
+  '/knowledge/entities': typeof KnowledgeEntitiesRouteWithChildren
   '/nodes/$id': typeof NodesIdRouteWithChildren
   '/spec/collaboration': typeof SpecCollaborationRoute
   '/spec/discovery': typeof SpecDiscoveryRoute
@@ -131,8 +161,10 @@ export interface FileRoutesByTo {
   '/spec/knowledge': typeof SpecKnowledgeRoute
   '/spec/reasoning': typeof SpecReasoningRoute
   '/spec/trust': typeof SpecTrustRoute
+  '/knowledge': typeof KnowledgeIndexRoute
   '/nodes': typeof NodesIndexRoute
   '/spec': typeof SpecIndexRoute
+  '/knowledge/entities/$id': typeof KnowledgeEntitiesIdRoute
   '/nodes/$id/dashboard': typeof NodesIdDashboardRoute
 }
 export interface FileRoutesById {
@@ -142,6 +174,8 @@ export interface FileRoutesById {
   '/discover': typeof DiscoverRoute
   '/docs': typeof DocsRoute
   '/register': typeof RegisterRoute
+  '/knowledge/contribute': typeof KnowledgeContributeRoute
+  '/knowledge/entities': typeof KnowledgeEntitiesRouteWithChildren
   '/nodes/$id': typeof NodesIdRouteWithChildren
   '/spec/collaboration': typeof SpecCollaborationRoute
   '/spec/discovery': typeof SpecDiscoveryRoute
@@ -149,8 +183,10 @@ export interface FileRoutesById {
   '/spec/knowledge': typeof SpecKnowledgeRoute
   '/spec/reasoning': typeof SpecReasoningRoute
   '/spec/trust': typeof SpecTrustRoute
+  '/knowledge/': typeof KnowledgeIndexRoute
   '/nodes/': typeof NodesIndexRoute
   '/spec/': typeof SpecIndexRoute
+  '/knowledge/entities/$id': typeof KnowledgeEntitiesIdRoute
   '/nodes/$id/dashboard': typeof NodesIdDashboardRoute
 }
 export interface FileRouteTypes {
@@ -161,6 +197,8 @@ export interface FileRouteTypes {
     | '/discover'
     | '/docs'
     | '/register'
+    | '/knowledge/contribute'
+    | '/knowledge/entities'
     | '/nodes/$id'
     | '/spec/collaboration'
     | '/spec/discovery'
@@ -168,8 +206,10 @@ export interface FileRouteTypes {
     | '/spec/knowledge'
     | '/spec/reasoning'
     | '/spec/trust'
+    | '/knowledge/'
     | '/nodes/'
     | '/spec/'
+    | '/knowledge/entities/$id'
     | '/nodes/$id/dashboard'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -178,6 +218,8 @@ export interface FileRouteTypes {
     | '/discover'
     | '/docs'
     | '/register'
+    | '/knowledge/contribute'
+    | '/knowledge/entities'
     | '/nodes/$id'
     | '/spec/collaboration'
     | '/spec/discovery'
@@ -185,8 +227,10 @@ export interface FileRouteTypes {
     | '/spec/knowledge'
     | '/spec/reasoning'
     | '/spec/trust'
+    | '/knowledge'
     | '/nodes'
     | '/spec'
+    | '/knowledge/entities/$id'
     | '/nodes/$id/dashboard'
   id:
     | '__root__'
@@ -195,6 +239,8 @@ export interface FileRouteTypes {
     | '/discover'
     | '/docs'
     | '/register'
+    | '/knowledge/contribute'
+    | '/knowledge/entities'
     | '/nodes/$id'
     | '/spec/collaboration'
     | '/spec/discovery'
@@ -202,8 +248,10 @@ export interface FileRouteTypes {
     | '/spec/knowledge'
     | '/spec/reasoning'
     | '/spec/trust'
+    | '/knowledge/'
     | '/nodes/'
     | '/spec/'
+    | '/knowledge/entities/$id'
     | '/nodes/$id/dashboard'
   fileRoutesById: FileRoutesById
 }
@@ -213,6 +261,8 @@ export interface RootRouteChildren {
   DiscoverRoute: typeof DiscoverRoute
   DocsRoute: typeof DocsRoute
   RegisterRoute: typeof RegisterRoute
+  KnowledgeContributeRoute: typeof KnowledgeContributeRoute
+  KnowledgeEntitiesRoute: typeof KnowledgeEntitiesRouteWithChildren
   NodesIdRoute: typeof NodesIdRouteWithChildren
   SpecCollaborationRoute: typeof SpecCollaborationRoute
   SpecDiscoveryRoute: typeof SpecDiscoveryRoute
@@ -220,6 +270,7 @@ export interface RootRouteChildren {
   SpecKnowledgeRoute: typeof SpecKnowledgeRoute
   SpecReasoningRoute: typeof SpecReasoningRoute
   SpecTrustRoute: typeof SpecTrustRoute
+  KnowledgeIndexRoute: typeof KnowledgeIndexRoute
   NodesIndexRoute: typeof NodesIndexRoute
   SpecIndexRoute: typeof SpecIndexRoute
 }
@@ -275,6 +326,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NodesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/knowledge/': {
+      id: '/knowledge/'
+      path: '/knowledge'
+      fullPath: '/knowledge/'
+      preLoaderRoute: typeof KnowledgeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/spec/trust': {
       id: '/spec/trust'
       path: '/spec/trust'
@@ -324,6 +382,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NodesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/knowledge/entities': {
+      id: '/knowledge/entities'
+      path: '/knowledge/entities'
+      fullPath: '/knowledge/entities'
+      preLoaderRoute: typeof KnowledgeEntitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/knowledge/contribute': {
+      id: '/knowledge/contribute'
+      path: '/knowledge/contribute'
+      fullPath: '/knowledge/contribute'
+      preLoaderRoute: typeof KnowledgeContributeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/nodes/$id/dashboard': {
       id: '/nodes/$id/dashboard'
       path: '/dashboard'
@@ -331,8 +403,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NodesIdDashboardRouteImport
       parentRoute: typeof NodesIdRoute
     }
+    '/knowledge/entities/$id': {
+      id: '/knowledge/entities/$id'
+      path: '/$id'
+      fullPath: '/knowledge/entities/$id'
+      preLoaderRoute: typeof KnowledgeEntitiesIdRouteImport
+      parentRoute: typeof KnowledgeEntitiesRoute
+    }
   }
 }
+
+interface KnowledgeEntitiesRouteChildren {
+  KnowledgeEntitiesIdRoute: typeof KnowledgeEntitiesIdRoute
+}
+
+const KnowledgeEntitiesRouteChildren: KnowledgeEntitiesRouteChildren = {
+  KnowledgeEntitiesIdRoute: KnowledgeEntitiesIdRoute,
+}
+
+const KnowledgeEntitiesRouteWithChildren =
+  KnowledgeEntitiesRoute._addFileChildren(KnowledgeEntitiesRouteChildren)
 
 interface NodesIdRouteChildren {
   NodesIdDashboardRoute: typeof NodesIdDashboardRoute
@@ -351,6 +441,8 @@ const rootRouteChildren: RootRouteChildren = {
   DiscoverRoute: DiscoverRoute,
   DocsRoute: DocsRoute,
   RegisterRoute: RegisterRoute,
+  KnowledgeContributeRoute: KnowledgeContributeRoute,
+  KnowledgeEntitiesRoute: KnowledgeEntitiesRouteWithChildren,
   NodesIdRoute: NodesIdRouteWithChildren,
   SpecCollaborationRoute: SpecCollaborationRoute,
   SpecDiscoveryRoute: SpecDiscoveryRoute,
@@ -358,6 +450,7 @@ const rootRouteChildren: RootRouteChildren = {
   SpecKnowledgeRoute: SpecKnowledgeRoute,
   SpecReasoningRoute: SpecReasoningRoute,
   SpecTrustRoute: SpecTrustRoute,
+  KnowledgeIndexRoute: KnowledgeIndexRoute,
   NodesIndexRoute: NodesIndexRoute,
   SpecIndexRoute: SpecIndexRoute,
 }
