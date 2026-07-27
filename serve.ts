@@ -43,6 +43,31 @@ for (let attempt = 1; ; attempt++) {
       async fetch(req) {
         const { pathname } = new URL(req.url);
 
+        // Sitemap
+        if (pathname === "/sitemap.xml") {
+          const baseUrl = "https://nexus.network";
+          const routes = [
+            "/", "/api", "/spec", "/spec/identity", "/spec/trust",
+            "/spec/discovery", "/spec/knowledge", "/spec/reasoning",
+            "/spec/collaboration", "/docs", "/register", "/nodes",
+            "/discover", "/network", "/knowledge", "/knowledge/entities",
+            "/knowledge/contribute", "/blog", "/blog/launch",
+            "/blog/why-infrastructure",
+          ];
+          const urls = routes
+            .map((route) =>
+              `  <url>\n    <loc>${baseUrl}${route}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>${route === "/" ? "1.0" : "0.8"}</priority>\n  </url>`
+            )
+            .join("\n");
+          const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+          return new Response(xml, {
+            headers: {
+              "Content-Type": "application/xml",
+              "Cache-Control": "public, max-age=3600",
+            },
+          });
+        }
+
         // API routes: /api/nexus/v1/*
         if (pathname.startsWith("/api/nexus/v1/")) {
           const apiResponse = await handleApiRequest(req);

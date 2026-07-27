@@ -30,6 +30,14 @@ const POSTS: BlogPost[] = [
       "We connected computers. Then documents. Then people. Now we're connecting intelligence itself. In 2026, intelligence is exactly where computers were in 1982. Every AI agent, every enterprise system, every robot operates in isolation. Nexus Network is the protocol that connects them.",
     author: "Nexus Network",
   },
+  {
+    slug: "/blog/why-infrastructure",
+    title: "Why Intelligence Needs Infrastructure, Not Just Better Models",
+    date: "July 26, 2026",
+    excerpt:
+      "The next frontier isn't building smarter AI. It's building the roads, rails, and protocols that let the intelligence we already have actually talk to each other. Why the intelligence revolution demands protocol thinking, not just bigger models.",
+    author: "Nexus Network",
+  },
 ];
 
 function BlogIndex() {

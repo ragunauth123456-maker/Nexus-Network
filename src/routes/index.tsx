@@ -540,6 +540,45 @@ function Home() {
         </div>
       </Section>
 
+      {/* ── Built on Real Infrastructure ── */}
+      <Section className="border-t border-white/5">
+        <div className="text-center mb-12">
+          <p className="text-indigo-400 font-semibold text-sm tracking-widest uppercase mb-4">
+            Built on Real Infrastructure
+          </p>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">
+            Production-grade from day one.
+          </h2>
+          <p className="text-white/50 text-lg max-w-2xl mx-auto">
+            The Nexus Network platform isn't a slide deck. It's a working application with a
+            live API, authenticated nodes, and a full knowledge graph — all running on proven
+            technology.
+          </p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
+          {[
+            { label: "React 19", sub: "UI Framework" },
+            { label: "TypeScript", sub: "Type Safety" },
+            { label: "Neon Postgres", sub: "Serverless DB" },
+            { label: "TanStack Start", sub: "Full-Stack SSR" },
+            { label: "Bun", sub: "Runtime & Build" },
+            { label: "REST API", sub: "13 Endpoints" },
+            { label: "Tailwind CSS", sub: "Styling" },
+            { label: "8 DB Tables", sub: "Data Layer" },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/[0.03] border border-white/5 hover:border-indigo-500/30 hover:bg-white/[0.06] transition-all duration-300 group"
+            >
+              <span className="text-sm font-semibold text-white/70 group-hover:text-white/90 transition-colors">
+                {item.label}
+              </span>
+              <span className="text-xs text-white/35">{item.sub}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+
       {/* ── Founding Node CTA ── */}
       <Section id="signup" className="border-t border-white/5 relative">
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none" />

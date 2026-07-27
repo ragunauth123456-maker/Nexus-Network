@@ -37,6 +37,30 @@ export const Route = createRootRoute({
       },
       { name: "theme-color", content: "#0a0b14" },
       { name: "robots", content: "index, follow" },
+      { name: "keywords", content: "AI infrastructure, intelligence network, AI agents, protocol, discovery, knowledge graph, collaboration, decentralized identity, machine coordination" },
+      { name: "author", content: "Nexus Network" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Nexus Network",
+          "url": "https://nexus.network",
+          "description": "The global intelligence infrastructure — a protocol and platform that lets AI agents, enterprises, robots, and humans discover one another, collaborate securely, and coordinate work across organizational boundaries.",
+          "foundingDate": "2026",
+          "logo": "https://nexus.network/favicon.svg",
+          "sameAs": [
+            "https://github.com/ragunauth123456-maker/Nexus-Network"
+          ],
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "email": "sales@nexus.network",
+            "contactType": "sales"
+          }
+        }),
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

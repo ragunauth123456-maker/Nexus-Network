@@ -28,6 +28,7 @@ import { Route as SpecCollaborationRouteImport } from './routes/spec/collaborati
 import { Route as NodesIdRouteImport } from './routes/nodes/$id'
 import { Route as KnowledgeEntitiesRouteImport } from './routes/knowledge/entities'
 import { Route as KnowledgeContributeRouteImport } from './routes/knowledge/contribute'
+import { Route as BlogWhyInfrastructureRouteImport } from './routes/blog/why-infrastructure'
 import { Route as BlogLaunchRouteImport } from './routes/blog/launch'
 import { Route as NodesIdDashboardRouteImport } from './routes/nodes/$id/dashboard'
 import { Route as KnowledgeEntitiesIdRouteImport } from './routes/knowledge/entities/$id'
@@ -127,6 +128,11 @@ const KnowledgeContributeRoute = KnowledgeContributeRouteImport.update({
   path: '/knowledge/contribute',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogWhyInfrastructureRoute = BlogWhyInfrastructureRouteImport.update({
+  id: '/blog/why-infrastructure',
+  path: '/blog/why-infrastructure',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogLaunchRoute = BlogLaunchRouteImport.update({
   id: '/blog/launch',
   path: '/blog/launch',
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/network': typeof NetworkRoute
   '/register': typeof RegisterRoute
   '/blog/launch': typeof BlogLaunchRoute
+  '/blog/why-infrastructure': typeof BlogWhyInfrastructureRoute
   '/knowledge/contribute': typeof KnowledgeContributeRoute
   '/knowledge/entities': typeof KnowledgeEntitiesRouteWithChildren
   '/nodes/$id': typeof NodesIdRouteWithChildren
@@ -175,6 +182,7 @@ export interface FileRoutesByTo {
   '/network': typeof NetworkRoute
   '/register': typeof RegisterRoute
   '/blog/launch': typeof BlogLaunchRoute
+  '/blog/why-infrastructure': typeof BlogWhyInfrastructureRoute
   '/knowledge/contribute': typeof KnowledgeContributeRoute
   '/knowledge/entities': typeof KnowledgeEntitiesRouteWithChildren
   '/nodes/$id': typeof NodesIdRouteWithChildren
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/network': typeof NetworkRoute
   '/register': typeof RegisterRoute
   '/blog/launch': typeof BlogLaunchRoute
+  '/blog/why-infrastructure': typeof BlogWhyInfrastructureRoute
   '/knowledge/contribute': typeof KnowledgeContributeRoute
   '/knowledge/entities': typeof KnowledgeEntitiesRouteWithChildren
   '/nodes/$id': typeof NodesIdRouteWithChildren
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/network'
     | '/register'
     | '/blog/launch'
+    | '/blog/why-infrastructure'
     | '/knowledge/contribute'
     | '/knowledge/entities'
     | '/nodes/$id'
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/network'
     | '/register'
     | '/blog/launch'
+    | '/blog/why-infrastructure'
     | '/knowledge/contribute'
     | '/knowledge/entities'
     | '/nodes/$id'
@@ -274,6 +285,7 @@ export interface FileRouteTypes {
     | '/network'
     | '/register'
     | '/blog/launch'
+    | '/blog/why-infrastructure'
     | '/knowledge/contribute'
     | '/knowledge/entities'
     | '/nodes/$id'
@@ -299,6 +311,7 @@ export interface RootRouteChildren {
   NetworkRoute: typeof NetworkRoute
   RegisterRoute: typeof RegisterRoute
   BlogLaunchRoute: typeof BlogLaunchRoute
+  BlogWhyInfrastructureRoute: typeof BlogWhyInfrastructureRoute
   KnowledgeContributeRoute: typeof KnowledgeContributeRoute
   KnowledgeEntitiesRoute: typeof KnowledgeEntitiesRouteWithChildren
   NodesIdRoute: typeof NodesIdRouteWithChildren
@@ -449,6 +462,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KnowledgeContributeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/why-infrastructure': {
+      id: '/blog/why-infrastructure'
+      path: '/blog/why-infrastructure'
+      fullPath: '/blog/why-infrastructure'
+      preLoaderRoute: typeof BlogWhyInfrastructureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/launch': {
       id: '/blog/launch'
       path: '/blog/launch'
@@ -503,6 +523,7 @@ const rootRouteChildren: RootRouteChildren = {
   NetworkRoute: NetworkRoute,
   RegisterRoute: RegisterRoute,
   BlogLaunchRoute: BlogLaunchRoute,
+  BlogWhyInfrastructureRoute: BlogWhyInfrastructureRoute,
   KnowledgeContributeRoute: KnowledgeContributeRoute,
   KnowledgeEntitiesRoute: KnowledgeEntitiesRouteWithChildren,
   NodesIdRoute: NodesIdRouteWithChildren,
