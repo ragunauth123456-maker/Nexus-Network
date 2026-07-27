@@ -747,6 +747,36 @@ async function handlePostWorkflow(req: Request): Promise<Response> {
 }
 
 // ──────────────────────────────────────────
+// Health
+// ──────────────────────────────────────────
+
+const SERVER_START_TIME = Date.now();
+
+async function handleHealth(): Promise<Response> {
+  const uptime = Math.floor((Date.now() - SERVER_START_TIME) / 1000);
+  let dbStatus = "disconnected";
+  let nodesCount = 0;
+
+  try {
+    const p = getPool();
+    const result = await p.query("SELECT COUNT(*) as count FROM nodes");
+    nodesCount = Number((result.rows[0] as Record<string, unknown>).count ?? 0);
+    dbStatus = "connected";
+  } catch {
+    // DB not available
+  }
+
+  return json({
+    status: "ok",
+    version: "1.0.0",
+    uptime,
+    database: dbStatus,
+    nodes_count: nodesCount,
+    endpoints: 13,
+  });
+}
+
+// ──────────────────────────────────────────
 // Router
 // ──────────────────────────────────────────
 
@@ -773,6 +803,11 @@ export async function handleApiRequest(req: Request): Promise<Response | null> {
   const method = req.method.toUpperCase();
 
   try {
+    // ── Health ──
+    if (pathname === "/api/nexus/v1/health") {
+      if (method === "GET") return handleHealth();
+    }
+
     // ── Nodes ──
     if (pathname === "/api/nexus/v1/nodes") {
       if (method === "GET") return handleGetNodes(req);

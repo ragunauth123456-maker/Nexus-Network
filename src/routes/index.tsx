@@ -673,7 +673,7 @@ function Home() {
               </li>
             </ul>
             <a
-              href="/register"
+              href="https://buy.stripe.com/dRm00i6nW7gQ31LgCR1kA0k"
               className="block text-center px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-900 font-semibold transition-all duration-200"
             >
               Become a Founding Node
@@ -761,10 +761,10 @@ function Home() {
               </li>
             </ul>
             <a
-              href="mailto:sales@nexus.network"
+              href="https://buy.stripe.com/5kQbJ0cMkdFe1XHbnB1k0A0m"
               className="block text-center px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold transition-all duration-200 border border-white/10"
             >
-              Contact Sales
+              Get Enterprise Access
             </a>
           </div>
         </div>
