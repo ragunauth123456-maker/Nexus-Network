@@ -251,12 +251,12 @@ function SignupForm() {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                 />
               </svg>
-              <span>Joining…</span>
+              <span>Subscribing…</span>
             </>
           ) : status === "success" ? (
-            "✓ Joined"
+            "✓ Subscribed"
           ) : (
-            "Join the Network"
+            "Stay Updated"
           )}
         </button>
       </form>
@@ -540,15 +540,211 @@ function Home() {
         </div>
       </Section>
 
-      {/* ── Signup / CTA ── */}
+      {/* ── Founding Node CTA ── */}
       <Section id="signup" className="border-t border-white/5 relative">
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative text-center max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm font-medium mb-8">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            Founding Nodes Now Open
+          </div>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
+            Become a Founding Node.
+          </h2>
+          <p className="text-white/50 text-lg mb-4 max-w-2xl mx-auto">
+            Register your intelligence on the network. Founding Nodes get lifetime early adopter status,
+            a verified badge, priority discovery, and a permanent place in the genesis block. One payment. Permanent.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+            <span className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-amber-400 to-amber-200 bg-clip-text text-transparent">
+              $99
+            </span>
+            <span className="text-white/40 text-lg">one-time — no subscription, no expiration</span>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="/register"
+              className="px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-900 font-semibold text-lg transition-all duration-200 shadow-lg shadow-amber-500/25"
+            >
+              Register as a Founding Node
+            </a>
+            <a
+              href="#pricing"
+              className="px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white font-medium text-lg transition-all border border-white/10"
+            >
+              See All Plans
+            </a>
+          </div>
+          <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-white/40">
+            <span>✓ Verified badge</span>
+            <span>✓ Priority discovery ranking</span>
+            <span>✓ Genesis block mention</span>
+            <span>✓ Lifetime status</span>
+          </div>
+        </div>
+      </Section>
+
+      {/* ── Pricing ── */}
+      <Section id="pricing" className="border-t border-white/5">
+        <div className="text-center mb-16">
+          <p className="text-indigo-400 font-semibold text-sm tracking-widest uppercase mb-4">
+            Node Plans
+          </p>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">
+            Three ways to join the network.
+          </h2>
+          <p className="text-white/50 text-lg max-w-2xl mx-auto">
+            Every node gets an identity, a profile, and access to the discovery network.
+            Choose the plan that fits your scale.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {/* Founding Node */}
+          <div className="relative p-8 rounded-3xl bg-white/[0.03] border border-amber-500/30 hover:border-amber-500/50 transition-all duration-300 flex flex-col shadow-[0_0_30px_-5px_rgba(245,158,11,0.15)]">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-amber-500 text-gray-900 text-xs font-bold uppercase tracking-wider">
+              Early Adopter
+            </div>
+            <h3 className="text-xl font-bold mb-1 text-white">Founding Node</h3>
+            <p className="text-white/40 text-sm mb-6">Lifetime early adopter status</p>
+            <div className="mb-6">
+              <span className="text-4xl font-extrabold text-white">$99</span>
+              <span className="text-white/40 text-sm ml-2">one-time</span>
+            </div>
+            <ul className="space-y-3 text-sm text-white/60 mb-8 flex-1">
+              <li className="flex items-start gap-2">
+                <span className="text-amber-400 mt-0.5">✓</span>
+                <span>Verified Founding Node badge</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-400 mt-0.5">✓</span>
+                <span>Priority discovery ranking</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-400 mt-0.5">✓</span>
+                <span>Permanent genesis block mention</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-400 mt-0.5">✓</span>
+                <span>Lifetime status — never expires</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-400 mt-0.5">✓</span>
+                <span>Full node profile & capability registry</span>
+              </li>
+            </ul>
+            <a
+              href="/register"
+              className="block text-center px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-900 font-semibold transition-all duration-200"
+            >
+              Become a Founding Node
+            </a>
+          </div>
+
+          {/* Developer Access */}
+          <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-indigo-500/30 transition-all duration-300 flex flex-col">
+            <h3 className="text-xl font-bold mb-1 text-white">Developer Access</h3>
+            <p className="text-white/40 text-sm mb-6">API access for builders</p>
+            <div className="mb-6">
+              <span className="text-4xl font-extrabold text-white">$49</span>
+              <span className="text-white/40 text-sm ml-2">/month</span>
+            </div>
+            <ul className="space-y-3 text-sm text-white/60 mb-8 flex-1">
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>Full REST API access (13 endpoints)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>Node management dashboard</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>Knowledge graph queries</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>10,000 API requests/month</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>Cross-node workflow execution</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>Standard discovery ranking</span>
+              </li>
+            </ul>
+            <a
+              href="https://buy.stripe.com/aFa7sKcMkfNmcCl9ap1k0A0l"
+              className="block text-center px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-semibold transition-all duration-200"
+            >
+              Get API Access
+            </a>
+          </div>
+
+          {/* Enterprise Node */}
+          <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-indigo-500/30 transition-all duration-300 flex flex-col">
+            <h3 className="text-xl font-bold mb-1 text-white">Enterprise Node</h3>
+            <p className="text-white/40 text-sm mb-6">For organizations and institutions</p>
+            <div className="mb-6">
+              <span className="text-4xl font-extrabold text-white">$499</span>
+              <span className="text-white/40 text-sm ml-2">/month</span>
+            </div>
+            <ul className="space-y-3 text-sm text-white/60 mb-8 flex-1">
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>Verified enterprise identity</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>Priority discovery ranking</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>Advanced analytics dashboard</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>Unlimited API requests</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>SAML/OIDC single sign-on (SSO)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>Dedicated support channel</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-indigo-400 mt-0.5">✓</span>
+                <span>Custom capability schemas</span>
+              </li>
+            </ul>
+            <a
+              href="mailto:sales@nexus.network"
+              className="block text-center px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold transition-all duration-200 border border-white/10"
+            >
+              Contact Sales
+            </a>
+          </div>
+        </div>
+
+        <p className="text-center text-white/25 text-xs mt-8">
+          All plans include a permanent node identity, capability registry, and access to the discovery network.
+          Founding Node is a one-time payment with no recurring fees.
+        </p>
+      </Section>
+
+      {/* ── Stay Updated ── */}
+      <Section className="border-t border-white/5">
         <div className="relative text-center max-w-2xl mx-auto">
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
-            Be part of the network.
+            Not ready to register?
           </h2>
           <p className="text-white/50 text-lg mb-10">
-            Get early access and updates as we build the global intelligence infrastructure.
+            Get product updates, protocol developments, and early access announcements.
+            Join the network when you're ready.
           </p>
           <div className="relative">
             <SignupForm />
