@@ -168,7 +168,7 @@ function CollaborationSpec() {
           </div>
         </div>
       </div>
-      <footer className="border-t border-white/5 py-10 px-6"><div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4"><span className="text-white/30 text-sm">© {new Date().getFullYear()} Nexus Network.</span><div className="flex items-center gap-6 text-sm text-white/30"><Link to="/spec" className="hover:text-white/60 transition-colors">Spec</Link><Link to="/docs" className="hover:text-white/60 transition-colors">Docs</Link><Link to="/api" className="hover:text-white/60 transition-colors">API</Link></div></div></footer>
+      <footer className="border-t border-white/5 py-10 px-6"><div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4"><span className="text-white/30 text-sm">© {new Date().getFullYear()} Nexus Network.</span><div className="flex items-center gap-6 text-sm text-white/30"><Link to="/spec" className="hover:text-white/60 transition-colors">Spec</Link><Link to="/docs" className="hover:text-white/60 transition-colors">Docs</Link><Link to="/api" className="hover:text-white/60 transition-colors">API</Link><Link to="/network" className="hover:text-white/60 transition-colors">Network</Link></div></div></footer>
     </div>
   );
 }

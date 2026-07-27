@@ -573,6 +573,9 @@ function Home() {
             <Link to="/api" className="hover:text-white/60 transition-colors">
               API
             </Link>
+            <Link to="/network" className="hover:text-white/60 transition-colors">
+              Network
+            </Link>
           </div>
         </div>
       </footer>

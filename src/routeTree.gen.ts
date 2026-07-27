@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as NetworkRouteImport } from './routes/network'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as ApiRouteImport } from './routes/api'
@@ -32,6 +33,11 @@ import { Route as KnowledgeEntitiesIdRouteImport } from './routes/knowledge/enti
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NetworkRoute = NetworkRouteImport.update({
+  id: '/network',
+  path: '/network',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsRoute = DocsRouteImport.update({
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/api': typeof ApiRoute
   '/discover': typeof DiscoverRoute
   '/docs': typeof DocsRoute
+  '/network': typeof NetworkRoute
   '/register': typeof RegisterRoute
   '/knowledge/contribute': typeof KnowledgeContributeRoute
   '/knowledge/entities': typeof KnowledgeEntitiesRouteWithChildren
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/api': typeof ApiRoute
   '/discover': typeof DiscoverRoute
   '/docs': typeof DocsRoute
+  '/network': typeof NetworkRoute
   '/register': typeof RegisterRoute
   '/knowledge/contribute': typeof KnowledgeContributeRoute
   '/knowledge/entities': typeof KnowledgeEntitiesRouteWithChildren
@@ -173,6 +181,7 @@ export interface FileRoutesById {
   '/api': typeof ApiRoute
   '/discover': typeof DiscoverRoute
   '/docs': typeof DocsRoute
+  '/network': typeof NetworkRoute
   '/register': typeof RegisterRoute
   '/knowledge/contribute': typeof KnowledgeContributeRoute
   '/knowledge/entities': typeof KnowledgeEntitiesRouteWithChildren
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
     | '/api'
     | '/discover'
     | '/docs'
+    | '/network'
     | '/register'
     | '/knowledge/contribute'
     | '/knowledge/entities'
@@ -217,6 +227,7 @@ export interface FileRouteTypes {
     | '/api'
     | '/discover'
     | '/docs'
+    | '/network'
     | '/register'
     | '/knowledge/contribute'
     | '/knowledge/entities'
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/api'
     | '/discover'
     | '/docs'
+    | '/network'
     | '/register'
     | '/knowledge/contribute'
     | '/knowledge/entities'
@@ -260,6 +272,7 @@ export interface RootRouteChildren {
   ApiRoute: typeof ApiRoute
   DiscoverRoute: typeof DiscoverRoute
   DocsRoute: typeof DocsRoute
+  NetworkRoute: typeof NetworkRoute
   RegisterRoute: typeof RegisterRoute
   KnowledgeContributeRoute: typeof KnowledgeContributeRoute
   KnowledgeEntitiesRoute: typeof KnowledgeEntitiesRouteWithChildren
@@ -282,6 +295,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/network': {
+      id: '/network'
+      path: '/network'
+      fullPath: '/network'
+      preLoaderRoute: typeof NetworkRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs': {
@@ -440,6 +460,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiRoute: ApiRoute,
   DiscoverRoute: DiscoverRoute,
   DocsRoute: DocsRoute,
+  NetworkRoute: NetworkRoute,
   RegisterRoute: RegisterRoute,
   KnowledgeContributeRoute: KnowledgeContributeRoute,
   KnowledgeEntitiesRoute: KnowledgeEntitiesRouteWithChildren,

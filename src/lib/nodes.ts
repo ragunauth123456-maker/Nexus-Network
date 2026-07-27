@@ -1075,6 +1075,135 @@ function coerceConnectionJoined(row: Record<string, unknown>): ConnectionRow {
   };
 }
 
+// ──────────────────────────────────────────
+// Network Stats — aggregate counts
+// ──────────────────────────────────────────
+
+export interface NetworkStats {
+  totalNodes: number;
+  totalConnections: number;
+  totalWorkflows: number;
+  totalEntities: number;
+  totalRelationships: number;
+}
+
+export const getNetworkStats = createServerFn({ method: "GET" })
+  .handler(async () => {
+    await ensureTables();
+    const p = pool();
+
+    const [nodeResult, connResult, wfResult, entityResult, relResult] = await Promise.all([
+      p.query("SELECT COUNT(*)::int as total FROM nodes WHERE status = 'active'"),
+      p.query("SELECT COUNT(*)::int as total FROM connections WHERE status = 'accepted'"),
+      p.query("SELECT COUNT(*)::int as total FROM workflows"),
+      p.query("SELECT COUNT(*)::int as total FROM knowledge_entities"),
+      p.query("SELECT COUNT(*)::int as total FROM knowledge_relationships"),
+    ]);
+
+    return {
+      totalNodes: Number((nodeResult.rows[0] as Record<string, unknown>).total ?? 0),
+      totalConnections: Number((connResult.rows[0] as Record<string, unknown>).total ?? 0),
+      totalWorkflows: Number((wfResult.rows[0] as Record<string, unknown>).total ?? 0),
+      totalEntities: Number((entityResult.rows[0] as Record<string, unknown>).total ?? 0),
+      totalRelationships: Number((relResult.rows[0] as Record<string, unknown>).total ?? 0),
+    } satisfies NetworkStats;
+  });
+
+// ──────────────────────────────────────────
+// Recent network activity (last N entries)
+// ──────────────────────────────────────────
+
+export interface NetworkActivityEntry {
+  id: string;
+  node_id: string;
+  node_name: string;
+  node_type: string;
+  action: string;
+  details: string;
+  created_at: string;
+}
+
+export const getRecentNetworkActivity = createServerFn({ method: "GET" })
+  .validator((data: unknown) => {
+    const d = data as { limit?: number } | null;
+    const limit = typeof d?.limit === "number" && d.limit > 0 ? Math.min(Math.floor(d.limit), 100) : 20;
+    return { limit };
+  })
+  .handler(async ({ data }) => {
+    await ensureTables();
+    const p = pool();
+    const result = await p.query(
+      `SELECT
+         a.id, a.node_id, a.action, a.details,
+         a.created_at::text AS created_at,
+         n.name AS node_name, n.node_type
+       FROM activity_log a
+       JOIN nodes n ON a.node_id = n.id
+       ORDER BY a.created_at DESC
+       LIMIT $1`,
+      [data.limit]
+    );
+    return result.rows.map((r: Record<string, unknown>) => ({
+      id: String(r.id),
+      node_id: String(r.node_id),
+      node_name: String(r.node_name ?? "Unknown"),
+      node_type: String(r.node_type ?? "unknown"),
+      action: String(r.action),
+      details: String(r.details ?? ""),
+      created_at: String(r.created_at),
+    })) satisfies NetworkActivityEntry[];
+  });
+
+// ──────────────────────────────────────────
+// Node type distribution
+// ──────────────────────────────────────────
+
+export interface TypeDistribution {
+  node_type: string;
+  count: number;
+}
+
+export const getNodeTypeDistribution = createServerFn({ method: "GET" })
+  .handler(async () => {
+    await ensureTables();
+    const p = pool();
+    const result = await p.query(
+      `SELECT node_type, COUNT(*)::int as count
+       FROM nodes WHERE status = 'active'
+       GROUP BY node_type
+       ORDER BY count DESC`
+    );
+    return result.rows.map((r: Record<string, unknown>) => ({
+      node_type: String(r.node_type),
+      count: Number(r.count),
+    })) satisfies TypeDistribution[];
+  });
+
+// ──────────────────────────────────────────
+// Domain distribution
+// ──────────────────────────────────────────
+
+export interface DomainDistribution {
+  domain: string;
+  count: number;
+}
+
+export const getDomainDistribution = createServerFn({ method: "GET" })
+  .handler(async () => {
+    await ensureTables();
+    const p = pool();
+    const result = await p.query(
+      `SELECT domain, COUNT(*)::int as count
+       FROM knowledge_entities
+       GROUP BY domain
+       ORDER BY count DESC`
+    );
+    return result.rows.map((r: Record<string, unknown>) => ({
+      domain: String(r.domain),
+      count: Number(r.count),
+    })) satisfies DomainDistribution[];
+  });
+
 function coerceWorkflowJoined(row: Record<string, unknown>, reqName?: string, provName?: string): WorkflowRow {
   return {
     id: String(row.id),

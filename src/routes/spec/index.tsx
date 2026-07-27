@@ -180,6 +180,7 @@ function SpecOverview() {
             <Link to="/spec" className="hover:text-white/60 transition-colors">Spec</Link>
             <Link to="/docs" className="hover:text-white/60 transition-colors">Docs</Link>
             <Link to="/api" className="hover:text-white/60 transition-colors">API</Link>
+            <Link to="/network" className="hover:text-white/60 transition-colors">Network</Link>
           </div>
         </div>
       </footer>

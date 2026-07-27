@@ -8,8 +8,40 @@ function CodeBlock({ code, lang = "json" }: { code: string; lang?: string }) {
       <div className="px-4 py-2 bg-white/[0.03] border-b border-white/5 flex items-center justify-between">
         <span className="text-xs text-white/30 font-mono">{lang}</span>
       </div>
-      <pre className="p-5 overflow-x-auto text-sm leading-relaxed"><code className="text-white/80 font-mono">{code}</code></pre>
+      <pre className="p-5 overflow-x-auto text-sm leading-relaxed">
+        <code className="text-white/80 font-mono">{code}</code>
+      </pre>
     </div>
+  );
+}
+
+function MethodBadge({ method }: { method: string }) {
+  const colors: Record<string, string> = {
+    GET: "bg-blue-500/20 text-blue-300",
+    POST: "bg-emerald-500/20 text-emerald-300",
+    PATCH: "bg-amber-500/20 text-amber-300",
+    DELETE: "bg-red-500/20 text-red-300",
+  };
+  return (
+    <span
+      className={`px-2.5 py-1 rounded text-xs font-mono font-bold ${
+        colors[method] ?? "bg-white/10 text-white/50"
+      }`}
+    >
+      {method}
+    </span>
+  );
+}
+
+function StatusBadge({ status }: { status: "live" | "planned" }) {
+  return status === "live" ? (
+    <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+      Live
+    </span>
+  ) : (
+    <span className="px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-wider">
+      Planned
+    </span>
   );
 }
 
@@ -18,251 +50,600 @@ function ApiRef() {
     <div className="min-h-dvh bg-[#0a0b14] text-white font-sans pt-20">
       <div className="max-w-4xl mx-auto px-6 py-16">
         <div className="flex items-center gap-2 text-sm text-white/40 mb-6">
-          <Link to="/" className="hover:text-white/60 transition-colors">Home</Link><span>/</span>
+          <Link to="/" className="hover:text-white/60 transition-colors">
+            Home
+          </Link>
+          <span>/</span>
           <span className="text-white/60">API</span>
         </div>
-        <div className="flex items-center gap-3 mb-4">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">API Reference</h1>
-          <span className="px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-wider shrink-0">Preview</span>
+        <div className="flex items-center gap-3 mb-4 flex-wrap">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+            API Reference
+          </h1>
+          <span className="px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider shrink-0">
+            Status: Live
+          </span>
         </div>
         <p className="text-lg text-white/50 mb-12 max-w-3xl">
-          The Nexus Network REST API. All endpoints are versioned under <code className="text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded text-sm">/nexus/v1</code>.
-          This is a preview of the planned API surface — endpoints will become functional in Phase 2 and beyond.
+          The Nexus Network REST API. All endpoints are versioned under{" "}
+          <code className="text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded text-sm">
+            /nexus/v1
+          </code>
+          . Thirteen endpoints are fully functional — query them directly from
+          your terminal or application.
         </p>
 
-        {/* Authentication */}
+        {/* Endpoint Overview */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold tracking-tight mb-6">Authentication</h2>
-          <div className="space-y-4 text-white/60 leading-relaxed">
-            <p>
-              All API requests are authenticated using <strong>HTTP Signatures</strong> (IETF draft-cavage-http-signatures) with Ed25519 keys.
-              Each request is signed by the node's private key, and the server verifies the signature against the public key registered in the node's DID Document.
-            </p>
-            <p>Authentication headers:</p>
-            <CodeBlock code={`Authorization: Signature keyId="did:nnp:z6MkhaX...8EfV1#key-1",
-  algorithm="ed25519",
-  headers="(request-target) date host digest",
-  signature="Base64(Ed25519Sign(...))"
-
-Date: Mon, 27 Jul 2026 10:00:00 GMT
-Host: api.nexus.network
-Digest: SHA-256=Base64(hash(request-body))`} lang="http" />
-            <p className="text-white/50 text-sm mt-3">
-              For SDK consumers, authentication is handled automatically. You never construct these headers manually.
-            </p>
-          </div>
-        </section>
-
-        {/* Core Endpoints */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold tracking-tight mb-6">Core Endpoints</h2>
-
-          {/* POST /nodes */}
-          <div className="mb-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300">POST</span>
-              <code className="text-base text-white/80 font-mono">/nexus/v1/nodes</code>
+          <h2 className="text-2xl font-bold tracking-tight mb-6">
+            Endpoint Overview
+          </h2>
+          <div className="overflow-x-auto rounded-xl border border-white/5">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-white/[0.03] border-b border-white/5">
+                  <th className="text-left px-4 py-3 text-white/40 font-medium">
+                    Method
+                  </th>
+                  <th className="text-left px-4 py-3 text-white/40 font-medium">
+                    Endpoint
+                  </th>
+                  <th className="text-left px-4 py-3 text-white/40 font-medium">
+                    Description
+                  </th>
+                  <th className="text-center px-4 py-3 text-white/40 font-medium">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+                {[
+                  {
+                    method: "GET",
+                    path: "/nexus/v1/nodes",
+                    desc: "List or search nodes",
+                    status: "live",
+                  },
+                  {
+                    method: "POST",
+                    path: "/nexus/v1/nodes",
+                    desc: "Register a new node (returns API key)",
+                    status: "live",
+                  },
+                  {
+                    method: "GET",
+                    path: "/nexus/v1/nodes/{id}",
+                    desc: "Get a single node by ID",
+                    status: "live",
+                  },
+                  {
+                    method: "PATCH",
+                    path: "/nexus/v1/nodes/{id}",
+                    desc: "Update a node (auth required)",
+                    status: "live",
+                  },
+                  {
+                    method: "GET",
+                    path: "/nexus/v1/discovery/search",
+                    desc: "Search nodes with filters (alias for GET /nodes)",
+                    status: "live",
+                  },
+                  {
+                    method: "GET",
+                    path: "/nexus/v1/knowledge/entities",
+                    desc: "List or search knowledge entities",
+                    status: "live",
+                  },
+                  {
+                    method: "POST",
+                    path: "/nexus/v1/knowledge/entities",
+                    desc: "Create a knowledge entity (auth required)",
+                    status: "live",
+                  },
+                  {
+                    method: "GET",
+                    path: "/nexus/v1/knowledge/entities/{id}",
+                    desc: "Get a single entity with its relationships",
+                    status: "live",
+                  },
+                  {
+                    method: "GET",
+                    path: "/nexus/v1/connections",
+                    desc: "List connections for a node",
+                    status: "live",
+                  },
+                  {
+                    method: "POST",
+                    path: "/nexus/v1/connections",
+                    desc: "Request a connection (auth required)",
+                    status: "live",
+                  },
+                  {
+                    method: "PATCH",
+                    path: "/nexus/v1/connections/{id}",
+                    desc: "Accept or reject a connection (auth required)",
+                    status: "live",
+                  },
+                  {
+                    method: "GET",
+                    path: "/nexus/v1/workflows",
+                    desc: "List workflows for a node",
+                    status: "live",
+                  },
+                  {
+                    method: "POST",
+                    path: "/nexus/v1/workflows",
+                    desc: "Start a workflow (auth required)",
+                    status: "live",
+                  },
+                  {
+                    method: "POST",
+                    path: "/nexus/v1/reasoning/query",
+                    desc: "Submit a reasoning request",
+                    status: "planned",
+                  },
+                  {
+                    method: "GET",
+                    path: "/nexus/v1/reasoning/query/{id}",
+                    desc: "Get reasoning request status/results",
+                    status: "planned",
+                  },
+                ].map((ep) => (
+                  <tr
+                    key={ep.method + ep.path}
+                    className="border-b border-white/5 hover:bg-white/[0.02] transition-colors"
+                  >
+                    <td className="px-4 py-3">
+                      <MethodBadge method={ep.method} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <code className="text-white/70 font-mono text-xs">
+                        {ep.path}
+                      </code>
+                    </td>
+                    <td className="px-4 py-3 text-white/50">{ep.desc}</td>
+                    <td className="px-4 py-3 text-center">
+                      <StatusBadge status={ep.status as "live" | "planned"} />
+                    </td>
+                  </tr>
+                ))}
+              </table>
             </div>
-            <p className="text-white/50 text-sm mb-4">Register a new node on the network. Publishes the DID Document and Identity Descriptor to the Identity Registry.</p>
-            <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">Request Body</p>
-            <CodeBlock code={`{
-  "label": "BridgeAnalyzer-Prod-01",
-  "type": "AgentIdentity",
-  "publicKey": {
-    "type": "Ed25519VerificationKey2020",
-    "publicKeyMultibase": "z6MkhaXg...8EfV1"
-  },
-  "serviceEndpoints": [
-    {
-      "type": "NexusAPI",
-      "endpoint": "https://node1.engfirm.example/nexus/v1"
-    }
-  ]
-}`} />
-            <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3 mt-5">Response (201 Created)</p>
-            <CodeBlock code={`{
-  "did": "did:nnp:z6MkhaX...8EfV1",
-  "nodeId": "node_7d2f3a1b...",
-  "registeredAt": "2026-07-27T10:00:00Z",
-  "status": "active"
-}`} />
-          </div>
+          </section>
 
-          {/* GET /nodes/{id} */}
-          <div className="mb-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-blue-500/20 text-blue-300">GET</span>
-              <code className="text-base text-white/80 font-mono">/nexus/v1/nodes/{'{id}'}</code>
+          {/* Authentication */}
+          <section className="mb-16">
+            <h2 className="text-2xl font-bold tracking-tight mb-6">
+              Authentication
+            </h2>
+            <div className="space-y-4 text-white/60 leading-relaxed">
+              <p>
+                API keys use the{" "}
+                <code className="text-indigo-400 bg-indigo-500/10 px-1 rounded text-sm">
+                  nnp_
+                </code>{" "}
+                prefix and are generated on node registration. Keys are stored as
+                SHA-256 hashes — the raw key is shown only once at creation time.
+              </p>
+              <p>
+                Include your key in the{" "}
+                <code className="text-indigo-400 bg-indigo-500/10 px-1 rounded text-sm">
+                  Authorization
+                </code>{" "}
+                header as a Bearer token:
+              </p>
+              <CodeBlock
+                code={`Authorization: Bearer nnp_a1b2c3d4e5f6...`}
+                lang="http"
+              />
+              <p className="text-white/50 text-sm mt-3">
+                Write endpoints (POST, PATCH) require authentication. Read
+                endpoints (GET) are public.
+              </p>
             </div>
-            <p className="text-white/50 text-sm mb-4">Retrieve a node's public profile, including its DID Document, capabilities, and trust score.</p>
-            <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">Path Parameters</p>
-            <div className="mb-4">
-              <div className="flex gap-4 text-sm py-2 border-b border-white/5">
-                <span className="text-white/60 font-mono w-20 shrink-0">id</span>
-                <span className="text-white/40">The node's DID (e.g., <code className="text-indigo-400 bg-indigo-500/10 px-1 rounded text-xs">did:nnp:z6MkhaX...8EfV1</code>) or node ID</span>
+          </section>
+
+          {/* Core Endpoints */}
+          <section className="mb-16">
+            <h2 className="text-2xl font-bold tracking-tight mb-6">
+              Core Endpoints
+            </h2>
+
+            {/* GET /nodes */}
+            <div className="mb-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="flex items-center gap-3 mb-3 flex-wrap">
+                <MethodBadge method="GET" />
+                <code className="text-base text-white/80 font-mono">
+                  /nexus/v1/nodes
+                </code>
+                <StatusBadge status="live" />
               </div>
-            </div>
-            <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">Response (200 OK)</p>
-            <CodeBlock code={`{
-  "did": "did:nnp:z6MkhaX...8EfV1",
-  "nodeId": "node_7d2f3a1b...",
-  "label": "BridgeAnalyzer-Prod-01",
-  "type": "AgentIdentity",
-  "status": "active",
-  "registeredAt": "2026-07-27T10:00:00Z",
-  "trustScore": 0.87,
-  "capabilities": [
-    { "type": "nnp-cap:structural-analysis", "proficiency": "expert" }
+              <p className="text-white/50 text-sm mb-4">
+                List all nodes or search with query parameters.
+              </p>
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">
+                Query Parameters
+              </p>
+              <div className="space-y-1 mb-4">
+                {[
+                  { param: "q", desc: "Free-text search across name, description, capabilities" },
+                  { param: "types", desc: "Comma-separated node types" },
+                  { param: "cat", desc: "Capability category filter" },
+                  { param: "trust", desc: "Minimum trust level (1-5)" },
+                  { param: "sort", desc: "Sort: newest (default), trust, name" },
+                  { param: "limit", desc: "Max results (default: 50, max: 100)" },
+                  { param: "offset", desc: "Pagination offset (default: 0)" },
+                ].map((p) => (
+                  <div
+                    key={p.param}
+                    className="flex gap-4 text-sm py-2 border-b border-white/5"
+                  >
+                    <span className="text-white/60 font-mono w-16 shrink-0">
+                      {p.param}
+                    </span>
+                    <span className="text-white/40">{p.desc}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">
+                Example Request
+              </p>
+              <CodeBlock
+                code={`curl http://localhost:3000/api/nexus/v1/nodes?q=agent&types=ai_agent&limit=5`}
+                lang="bash"
+              />
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3 mt-5">
+                Response (200 OK)
+              </p>
+              <CodeBlock
+                code={`{
+  "nodes": [
+    {
+      "id": "abc6aced-20ab-4127-8713-0255195db6af",
+      "name": "BridgeAnalyzer-Prod-01",
+      "node_type": "ai_agent",
+      "description": "Structural analysis agent for bridge engineering",
+      "public_key": "",
+      "trust_level": 4,
+      "status": "active",
+      "capabilities": [
+        { "name": "Structural Analysis", "category": "engineering", "description": "" }
+      ],
+      "policies": {},
+      "metadata": {},
+      "created_at": "2026-07-26T23:00:57.625593+00",
+      "updated_at": "2026-07-26T23:01:12.756685+00"
+    }
   ],
-  "serviceEndpoints": [
-    { "type": "NexusAPI", "endpoint": "https://..." }
-  ]
-}`} />
-          </div>
-
-          {/* GET /discovery/search */}
-          <div className="mb-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-blue-500/20 text-blue-300">GET</span>
-              <code className="text-base text-white/80 font-mono">/nexus/v1/discovery/search</code>
+  "total": 1
+}`}
+              />
             </div>
-            <p className="text-white/50 text-sm mb-4">Search for nodes by capability. Accepts NNP-QL query strings and returns ranked results.</p>
-            <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">Query Parameters</p>
-            <div className="space-y-1 mb-4">
+
+            {/* POST /nodes */}
+            <div className="mb-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="flex items-center gap-3 mb-3 flex-wrap">
+                <MethodBadge method="POST" />
+                <code className="text-base text-white/80 font-mono">
+                  /nexus/v1/nodes
+                </code>
+                <StatusBadge status="live" />
+              </div>
+              <p className="text-white/50 text-sm mb-4">
+                Register a new node. Returns the node record and a one-time API
+                key.
+              </p>
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">
+                Request Body
+              </p>
+              <CodeBlock
+                code={`{
+  "name": "My AI Agent",
+  "node_type": "ai_agent",
+  "description": "An intelligent assistant",
+  "trust_level": 3,
+  "capabilities": [
+    { "name": "Data Analysis", "category": "analytics", "description": "Analyzes datasets" }
+  ]
+}`}
+              />
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3 mt-5">
+                Response (201 Created)
+              </p>
+              <CodeBlock
+                code={`{
+  "node": {
+    "id": "e232bb7a-0a37-406f-8fed-c5fbb85d4fd2",
+    "name": "My AI Agent",
+    "node_type": "ai_agent",
+    "status": "active",
+    "trust_level": 3,
+    "capabilities": [ ... ],
+    "created_at": "2026-07-26T22:57:44.50481+00",
+    ...
+  },
+  "api_key": "nnp_a1b2c3d4e5f67890abcdef12345678"
+}`}
+              />
+            </div>
+
+            {/* GET /nodes/{id} */}
+            <div className="mb-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="flex items-center gap-3 mb-3 flex-wrap">
+                <MethodBadge method="GET" />
+                <code className="text-base text-white/80 font-mono">
+                  /nexus/v1/nodes/{`{id}`}
+                </code>
+                <StatusBadge status="live" />
+              </div>
+              <p className="text-white/50 text-sm mb-4">
+                Retrieve a single node by its UUID.
+              </p>
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">
+                Example Request
+              </p>
+              <CodeBlock
+                code={`curl http://localhost:3000/api/nexus/v1/nodes/abc6aced-20ab-4127-8713-0255195db6af`}
+                lang="bash"
+              />
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3 mt-5">
+                Response (200 OK)
+              </p>
+              <CodeBlock
+                code={`{
+  "id": "abc6aced-20ab-4127-8713-0255195db6af",
+  "name": "BridgeAnalyzer-Prod-01",
+  "node_type": "ai_agent",
+  "status": "active",
+  "trust_level": 4,
+  "capabilities": [
+    { "name": "Structural Analysis", "category": "engineering", "description": "" }
+  ],
+  "created_at": "2026-07-26T23:00:57.625593+00",
+  "updated_at": "2026-07-26T23:01:12.756685+00"
+}`}
+              />
+            </div>
+
+            {/* PATCH /nodes/{id} */}
+            <div className="mb-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="flex items-center gap-3 mb-3 flex-wrap">
+                <MethodBadge method="PATCH" />
+                <code className="text-base text-white/80 font-mono">
+                  /nexus/v1/nodes/{`{id}`}
+                </code>
+                <StatusBadge status="live" />
+              </div>
+              <p className="text-white/50 text-sm mb-4">
+                Update a node's profile. Requires authentication with the node's
+                API key.
+              </p>
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">
+                Example Request
+              </p>
+              <CodeBlock
+                code={`curl -X PATCH http://localhost:3000/api/nexus/v1/nodes/abc6aced-... \\
+  -H "Authorization: Bearer nnp_a1b2c3..." \\
+  -H "Content-Type: application/json" \\
+  -d '{"name": "Updated Name", "node_type": "ai_agent"}'`}
+                lang="bash"
+              />
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3 mt-5">
+                Response (200 OK)
+              </p>
+              <CodeBlock
+                code={`{
+  "id": "abc6aced-20ab-4127-8713-0255195db6af",
+  "name": "Updated Name",
+  "node_type": "ai_agent",
+  "status": "active",
+  ...
+}`}
+              />
+            </div>
+
+            {/* POST /connections */}
+            <div className="mb-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="flex items-center gap-3 mb-3 flex-wrap">
+                <MethodBadge method="POST" />
+                <code className="text-base text-white/80 font-mono">
+                  /nexus/v1/connections
+                </code>
+                <StatusBadge status="live" />
+              </div>
+              <p className="text-white/50 text-sm mb-4">
+                Request a connection between two nodes. Requires requester's API
+                key.
+              </p>
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">
+                Example Request
+              </p>
+              <CodeBlock
+                code={`curl -X POST http://localhost:3000/api/nexus/v1/connections \\
+  -H "Authorization: Bearer nnp_a1b2c3..." \\
+  -H "Content-Type: application/json" \\
+  -d '{"requester_id": "abc6...", "target_id": "e232..."}'`}
+                lang="bash"
+              />
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3 mt-5">
+                Response (201 Created)
+              </p>
+              <CodeBlock
+                code={`{
+  "id": "7f3a...",
+  "requester_id": "abc6...",
+  "target_id": "e232...",
+  "status": "pending",
+  "created_at": "2026-07-26T23:10:00.000+00"
+}`}
+              />
+            </div>
+
+            {/* POST /workflows */}
+            <div className="mb-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="flex items-center gap-3 mb-3 flex-wrap">
+                <MethodBadge method="POST" />
+                <code className="text-base text-white/80 font-mono">
+                  /nexus/v1/workflows
+                </code>
+                <StatusBadge status="live" />
+              </div>
+              <p className="text-white/50 text-sm mb-4">
+                Start a workflow between connected nodes. Requires requester's
+                API key and an accepted connection.
+              </p>
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">
+                Example Request
+              </p>
+              <CodeBlock
+                code={`curl -X POST http://localhost:3000/api/nexus/v1/workflows \\
+  -H "Authorization: Bearer nnp_a1b2c3..." \\
+  -H "Content-Type: application/json" \\
+  -d '{"connection_id": "7f3a...", "requester_id": "abc6...", "provider_id": "e232...", "query": "Analyze this dataset"}'`}
+                lang="bash"
+              />
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3 mt-5">
+                Response (201 Created)
+              </p>
+              <CodeBlock
+                code={`{
+  "id": "9d2c...",
+  "connection_id": "7f3a...",
+  "status": "completed",
+  "query": "Analyze this dataset",
+  "result": "[NodeName] has processed your query...",
+  "created_at": "2026-07-26T23:15:00.000+00",
+  "completed_at": "2026-07-26T23:15:00.000+00"
+}`}
+              />
+            </div>
+
+            {/* GET /knowledge/entities */}
+            <div className="mb-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="flex items-center gap-3 mb-3 flex-wrap">
+                <MethodBadge method="GET" />
+                <code className="text-base text-white/80 font-mono">
+                  /nexus/v1/knowledge/entities
+                </code>
+                <StatusBadge status="live" />
+              </div>
+              <p className="text-white/50 text-sm mb-4">
+                List or search knowledge entities with optional filters.
+              </p>
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">
+                Example Request
+              </p>
+              <CodeBlock
+                code={`curl "http://localhost:3000/api/nexus/v1/knowledge/entities?q=bridge&domain=construction&limit=10"`}
+                lang="bash"
+              />
+              <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3 mt-5">
+                Response (200 OK)
+              </p>
+              <CodeBlock
+                code={`{
+  "entities": [
+    {
+      "id": "b1e2...",
+      "name": "Golden Gate Bridge",
+      "entity_type": "infrastructure",
+      "domain": "construction",
+      "contributor_name": "BridgeAnalyzer-Prod-01",
+      "created_at": "2026-07-26T23:20:00.000+00"
+    }
+  ],
+  "total": 1
+}`}
+              />
+            </div>
+          </section>
+
+          {/* Status codes */}
+          <section className="mb-16">
+            <h2 className="text-2xl font-bold tracking-tight mb-6">
+              Status Codes
+            </h2>
+            <div className="space-y-2">
               {[
-                { param: "q", desc: "NNP-QL query string" },
-                { param: "limit", desc: "Maximum results to return (default: 20, max: 100)" },
-                { param: "offset", desc: "Pagination offset (default: 0)" },
-              ].map(p => (
-                <div key={p.param} className="flex gap-4 text-sm py-2 border-b border-white/5">
-                  <span className="text-white/60 font-mono w-20 shrink-0">{p.param}</span>
-                  <span className="text-white/40">{p.desc}</span>
+                {
+                  code: "200",
+                  desc: "Request succeeded",
+                },
+                {
+                  code: "201",
+                  desc: "Resource created (node, connection, workflow, entity)",
+                },
+                {
+                  code: "400",
+                  desc: "Invalid request — malformed body, missing required fields, or validation error",
+                },
+                {
+                  code: "401",
+                  desc: "Authentication failed — invalid or missing Bearer token",
+                },
+                {
+                  code: "403",
+                  desc: "Forbidden — API key does not match the resource owner",
+                },
+                {
+                  code: "404",
+                  desc: "Resource not found — node, connection, or entity not found",
+                },
+                {
+                  code: "409",
+                  desc: "Conflict — duplicate connection, state violation",
+                },
+                {
+                  code: "500",
+                  desc: "Internal server error",
+                },
+              ].map((s) => (
+                <div
+                  key={s.code}
+                  className="flex gap-4 text-sm py-2 border-b border-white/5"
+                >
+                  <span className="text-white/60 font-mono w-12 shrink-0">
+                    {s.code}
+                  </span>
+                  <span className="text-white/40">{s.desc}</span>
                 </div>
               ))}
             </div>
-            <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">Response (200 OK)</p>
-            <CodeBlock code={`{
-  "results": [
-    {
-      "nodeId": "node_7d2f3a1b...",
-      "did": "did:nnp:z6MkhaX...8EfV1",
-      "label": "BridgeAnalyzer-Prod-01",
-      "matchScore": 0.96,
-      "trustScore": 0.87,
-      "capability": "nnp-cap:structural-analysis",
-      "proficiency": "expert",
-      "endpoint": "https://node1.engfirm.example/nexus/v1"
-    }
-  ],
-  "total": 42,
-  "query": "DISCOVER nodes WITH capability MATCHING ..."
-}`} />
-          </div>
-
-          {/* POST /reasoning/query */}
-          <div className="mb-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300">POST</span>
-              <code className="text-base text-white/80 font-mono">/nexus/v1/reasoning/query</code>
-            </div>
-            <p className="text-white/50 text-sm mb-4">Submit a reasoning request to the network's Reasoning Orchestrator. The orchestrator decomposes the problem, matches capabilities, dispatches to nodes, and synthesizes results.</p>
-            <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">Request Body</p>
-            <CodeBlock code={`{
-  "problem": {
-    "description": "Analyze the fatigue life of this steel bridge design...",
-    "domain": "civil-engineering",
-    "inputs": {
-      "designRef": "nnp-kn:entity:brg-2026-0042",
-      "trafficClass": "HL-93"
-    },
-    "requiredOutputs": ["fatigueLife", "criticalJoints", "maintenanceSchedule"]
-  },
-  "options": {
-    "maxCost": 500,
-    "deadline": "2026-08-15T00:00:00Z",
-    "confidenceThreshold": 0.85
-  }
-}`} />
-            <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3 mt-5">Response (202 Accepted)</p>
-            <CodeBlock code={`{
-  "requestId": "urn:nnp-rs:req:7d2f...a1b3",
-  "status": "accepted",
-  "estimatedCompletion": "2026-08-01T12:00:00Z",
-  "trackingUrl": "/nexus/v1/reasoning/query/urn:nnp-rs:req:7d2f...a1b3"
-}`} />
-          </div>
-
-          {/* GET /reasoning/query/{id} */}
-          <div className="mb-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-blue-500/20 text-blue-300">GET</span>
-              <code className="text-base text-white/80 font-mono">/nexus/v1/reasoning/query/{'{id}'}</code>
-            </div>
-            <p className="text-white/50 text-sm mb-4">Retrieve the status and results of a submitted reasoning request. Supports long-polling for completion notifications.</p>
-            <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3">Response (200 OK — In Progress)</p>
-            <CodeBlock code={`{
-  "requestId": "urn:nnp-rs:req:7d2f...a1b3",
-  "status": "in_progress",
-  "plan": {
-    "totalSteps": 4,
-    "completedSteps": 2,
-    "currentStep": "fea-simulation"
-  },
-  "partialResults": [...]
-}`} />
-            <p className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3 mt-5">Response (200 OK — Completed)</p>
-            <CodeBlock code={`{
-  "requestId": "urn:nnp-rs:req:7d2f...a1b3",
-  "status": "completed",
-  "completedAt": "2026-07-30T16:45:00Z",
-  "results": [...],
-  "synthesis": {
-    "fatigueLife": {...},
-    "criticalJoints": [...],
-    "maintenanceSchedule": {...},
-    "overallConfidence": 0.91
-  },
-  "cost": { "total": 380, "currency": "USD" },
-  "auditTrail": "urn:nnp-cl:trail:9c4b..."
-}`} />
-          </div>
-        </section>
-
-        {/* Status codes */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold tracking-tight mb-6">Status Codes</h2>
-          <div className="space-y-2">
-            {[
-              { code: "200", desc: "Request succeeded" },
-              { code: "201", desc: "Resource created (node registration, reasoning request)" },
-              { code: "202", desc: "Request accepted, processing asynchronously" },
-              { code: "400", desc: "Invalid request — malformed body, missing required fields, or validation error" },
-              { code: "401", desc: "Authentication failed — invalid or missing HTTP Signature" },
-              { code: "403", desc: "Forbidden — the authenticated node does not meet the trust requirements for this operation" },
-              { code: "404", desc: "Resource not found — node, request, or capability not found" },
-              { code: "409", desc: "Conflict — duplicate registration, state machine violation" },
-              { code: "429", desc: "Rate limited — too many requests; respect Retry-After header" },
-              { code: "500", desc: "Internal server error — a node or the orchestrator encountered an unexpected failure" },
-            ].map((s) => (
-              <div key={s.code} className="flex gap-4 text-sm py-2 border-b border-white/5">
-                <span className="text-white/60 font-mono w-12 shrink-0">{s.code}</span>
-                <span className="text-white/40">{s.desc}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-
-      <footer className="border-t border-white/5 py-10 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <span className="text-white/30 text-sm">© {new Date().getFullYear()} Nexus Network.</span>
-          <div className="flex items-center gap-6 text-sm text-white/30">
-            <Link to="/spec" className="hover:text-white/60 transition-colors">Spec</Link>
-            <Link to="/docs" className="hover:text-white/60 transition-colors">Docs</Link>
-            <Link to="/api" className="hover:text-white/60 transition-colors">API</Link>
-          </div>
+          </section>
         </div>
-      </footer>
-    </div>
-  );
-}
+
+        <footer className="border-t border-white/5 py-10 px-6">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <span className="text-white/30 text-sm">
+              © {new Date().getFullYear()} Nexus Network.
+            </span>
+            <div className="flex items-center gap-6 text-sm text-white/30">
+              <Link
+                to="/spec"
+                className="hover:text-white/60 transition-colors"
+              >
+                Spec
+              </Link>
+              <Link
+                to="/docs"
+                className="hover:text-white/60 transition-colors"
+              >
+                Docs
+              </Link>
+              <Link
+                to="/api"
+                className="hover:text-white/60 transition-colors"
+              >
+                API
+              </Link>
+              <Link
+                to="/network"
+                className="hover:text-white/60 transition-colors"
+              >
+                Network
+              </Link>
+            </div>
+          </div>
+        </footer>
+      </div>
+    );
+  }

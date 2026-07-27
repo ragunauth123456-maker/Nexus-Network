@@ -53,6 +53,7 @@ function Nav() {
 
   const links = [
     { to: "/discover", label: "Discover" },
+    { to: "/network", label: "Network" },
     { to: "/knowledge", label: "Knowledge" },
     { to: "/spec", label: "Spec" },
     { to: "/docs", label: "Docs" },
