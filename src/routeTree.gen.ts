@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SpecIndexRouteImport } from './routes/spec/index'
 import { Route as NodesIndexRouteImport } from './routes/nodes/index'
 import { Route as KnowledgeIndexRouteImport } from './routes/knowledge/index'
+import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as SpecTrustRouteImport } from './routes/spec/trust'
 import { Route as SpecReasoningRouteImport } from './routes/spec/reasoning'
 import { Route as SpecKnowledgeRouteImport } from './routes/spec/knowledge'
@@ -27,6 +28,7 @@ import { Route as SpecCollaborationRouteImport } from './routes/spec/collaborati
 import { Route as NodesIdRouteImport } from './routes/nodes/$id'
 import { Route as KnowledgeEntitiesRouteImport } from './routes/knowledge/entities'
 import { Route as KnowledgeContributeRouteImport } from './routes/knowledge/contribute'
+import { Route as BlogLaunchRouteImport } from './routes/blog/launch'
 import { Route as NodesIdDashboardRouteImport } from './routes/nodes/$id/dashboard'
 import { Route as KnowledgeEntitiesIdRouteImport } from './routes/knowledge/entities/$id'
 
@@ -75,6 +77,11 @@ const KnowledgeIndexRoute = KnowledgeIndexRouteImport.update({
   path: '/knowledge/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SpecTrustRoute = SpecTrustRouteImport.update({
   id: '/spec/trust',
   path: '/spec/trust',
@@ -120,6 +127,11 @@ const KnowledgeContributeRoute = KnowledgeContributeRouteImport.update({
   path: '/knowledge/contribute',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogLaunchRoute = BlogLaunchRouteImport.update({
+  id: '/blog/launch',
+  path: '/blog/launch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NodesIdDashboardRoute = NodesIdDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -138,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/docs': typeof DocsRoute
   '/network': typeof NetworkRoute
   '/register': typeof RegisterRoute
+  '/blog/launch': typeof BlogLaunchRoute
   '/knowledge/contribute': typeof KnowledgeContributeRoute
   '/knowledge/entities': typeof KnowledgeEntitiesRouteWithChildren
   '/nodes/$id': typeof NodesIdRouteWithChildren
@@ -147,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/spec/knowledge': typeof SpecKnowledgeRoute
   '/spec/reasoning': typeof SpecReasoningRoute
   '/spec/trust': typeof SpecTrustRoute
+  '/blog/': typeof BlogIndexRoute
   '/knowledge/': typeof KnowledgeIndexRoute
   '/nodes/': typeof NodesIndexRoute
   '/spec/': typeof SpecIndexRoute
@@ -160,6 +174,7 @@ export interface FileRoutesByTo {
   '/docs': typeof DocsRoute
   '/network': typeof NetworkRoute
   '/register': typeof RegisterRoute
+  '/blog/launch': typeof BlogLaunchRoute
   '/knowledge/contribute': typeof KnowledgeContributeRoute
   '/knowledge/entities': typeof KnowledgeEntitiesRouteWithChildren
   '/nodes/$id': typeof NodesIdRouteWithChildren
@@ -169,6 +184,7 @@ export interface FileRoutesByTo {
   '/spec/knowledge': typeof SpecKnowledgeRoute
   '/spec/reasoning': typeof SpecReasoningRoute
   '/spec/trust': typeof SpecTrustRoute
+  '/blog': typeof BlogIndexRoute
   '/knowledge': typeof KnowledgeIndexRoute
   '/nodes': typeof NodesIndexRoute
   '/spec': typeof SpecIndexRoute
@@ -183,6 +199,7 @@ export interface FileRoutesById {
   '/docs': typeof DocsRoute
   '/network': typeof NetworkRoute
   '/register': typeof RegisterRoute
+  '/blog/launch': typeof BlogLaunchRoute
   '/knowledge/contribute': typeof KnowledgeContributeRoute
   '/knowledge/entities': typeof KnowledgeEntitiesRouteWithChildren
   '/nodes/$id': typeof NodesIdRouteWithChildren
@@ -192,6 +209,7 @@ export interface FileRoutesById {
   '/spec/knowledge': typeof SpecKnowledgeRoute
   '/spec/reasoning': typeof SpecReasoningRoute
   '/spec/trust': typeof SpecTrustRoute
+  '/blog/': typeof BlogIndexRoute
   '/knowledge/': typeof KnowledgeIndexRoute
   '/nodes/': typeof NodesIndexRoute
   '/spec/': typeof SpecIndexRoute
@@ -207,6 +225,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/network'
     | '/register'
+    | '/blog/launch'
     | '/knowledge/contribute'
     | '/knowledge/entities'
     | '/nodes/$id'
@@ -216,6 +235,7 @@ export interface FileRouteTypes {
     | '/spec/knowledge'
     | '/spec/reasoning'
     | '/spec/trust'
+    | '/blog/'
     | '/knowledge/'
     | '/nodes/'
     | '/spec/'
@@ -229,6 +249,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/network'
     | '/register'
+    | '/blog/launch'
     | '/knowledge/contribute'
     | '/knowledge/entities'
     | '/nodes/$id'
@@ -238,6 +259,7 @@ export interface FileRouteTypes {
     | '/spec/knowledge'
     | '/spec/reasoning'
     | '/spec/trust'
+    | '/blog'
     | '/knowledge'
     | '/nodes'
     | '/spec'
@@ -251,6 +273,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/network'
     | '/register'
+    | '/blog/launch'
     | '/knowledge/contribute'
     | '/knowledge/entities'
     | '/nodes/$id'
@@ -260,6 +283,7 @@ export interface FileRouteTypes {
     | '/spec/knowledge'
     | '/spec/reasoning'
     | '/spec/trust'
+    | '/blog/'
     | '/knowledge/'
     | '/nodes/'
     | '/spec/'
@@ -274,6 +298,7 @@ export interface RootRouteChildren {
   DocsRoute: typeof DocsRoute
   NetworkRoute: typeof NetworkRoute
   RegisterRoute: typeof RegisterRoute
+  BlogLaunchRoute: typeof BlogLaunchRoute
   KnowledgeContributeRoute: typeof KnowledgeContributeRoute
   KnowledgeEntitiesRoute: typeof KnowledgeEntitiesRouteWithChildren
   NodesIdRoute: typeof NodesIdRouteWithChildren
@@ -283,6 +308,7 @@ export interface RootRouteChildren {
   SpecKnowledgeRoute: typeof SpecKnowledgeRoute
   SpecReasoningRoute: typeof SpecReasoningRoute
   SpecTrustRoute: typeof SpecTrustRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   KnowledgeIndexRoute: typeof KnowledgeIndexRoute
   NodesIndexRoute: typeof NodesIndexRoute
   SpecIndexRoute: typeof SpecIndexRoute
@@ -353,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KnowledgeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/spec/trust': {
       id: '/spec/trust'
       path: '/spec/trust'
@@ -416,6 +449,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KnowledgeContributeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/launch': {
+      id: '/blog/launch'
+      path: '/blog/launch'
+      fullPath: '/blog/launch'
+      preLoaderRoute: typeof BlogLaunchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/nodes/$id/dashboard': {
       id: '/nodes/$id/dashboard'
       path: '/dashboard'
@@ -462,6 +502,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocsRoute: DocsRoute,
   NetworkRoute: NetworkRoute,
   RegisterRoute: RegisterRoute,
+  BlogLaunchRoute: BlogLaunchRoute,
   KnowledgeContributeRoute: KnowledgeContributeRoute,
   KnowledgeEntitiesRoute: KnowledgeEntitiesRouteWithChildren,
   NodesIdRoute: NodesIdRouteWithChildren,
@@ -471,6 +512,7 @@ const rootRouteChildren: RootRouteChildren = {
   SpecKnowledgeRoute: SpecKnowledgeRoute,
   SpecReasoningRoute: SpecReasoningRoute,
   SpecTrustRoute: SpecTrustRoute,
+  BlogIndexRoute: BlogIndexRoute,
   KnowledgeIndexRoute: KnowledgeIndexRoute,
   NodesIndexRoute: NodesIndexRoute,
   SpecIndexRoute: SpecIndexRoute,

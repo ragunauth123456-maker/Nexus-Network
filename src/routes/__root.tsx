@@ -55,6 +55,7 @@ function Nav() {
     { to: "/discover", label: "Discover" },
     { to: "/network", label: "Network" },
     { to: "/knowledge", label: "Knowledge" },
+    { to: "/blog", label: "Blog" },
     { to: "/spec", label: "Spec" },
     { to: "/docs", label: "Docs" },
     { to: "/api", label: "API" },
